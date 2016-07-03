@@ -46,6 +46,9 @@ window.onload = () => {
       {label:'label17', id:'__17'},
       {label:'label18', id:'__18'}
     ],
+    events: [
+      {lineId: '__2', timeSpan: TimeSpan.create([12, 30], [13, 30]), color: '#FFDCB6'}
+    ],
     timeSpan: TimeSpan.create([10, 0], [25, 0]),
     windowHeight: calcHeight(elem)
   })

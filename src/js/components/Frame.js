@@ -5,6 +5,7 @@ import { DropTarget } from 'react-dnd';
 import LineLabel from './LineLabel';
 import Line from './Line';
 import Ruler from './Ruler';
+import Event from './Event';
 
 const target = {
   drop(props, monitor, component) {
@@ -96,6 +97,28 @@ class Frame extends Component
     }
   }
 
+  getLineLeft(lineId){
+    let left = 0;
+
+    for (var i = 0; i < this.props.lines.length; i++) {
+      var line = this.props.lines[i];
+      const hasRuler = i % this.props.rulerInterval === 0;
+      if(hasRuler){
+        left += Ruler.width;
+      }
+      
+      if(line.id == lineId){
+        break;
+      }
+
+      left += this.props.lineWidth;
+    }
+
+    left += Line.sidePadding;
+
+    return left;
+  }
+
   render(){
     const { connectDropTarget } = this.props;
     return connectDropTarget(
@@ -113,8 +136,11 @@ class Frame extends Component
                 display={event.display}
                 lineId={event.lineId}
                 timeline={this.props.timeline}
-                width={this.props.timeline.props.lineWidth - 2 - (Line.sidePadding * 2)}
+                width={this.props.lineWidth - 2 - (Line.sidePadding * 2)}
                 vars={event.vars}
+                timeSpanToHeight={timeSpan => (timeSpan.getDistance() * this.perMinHeight) - 1}
+                timeToTop={time => this.timeSpan.getStartTime().getDistance(time) * this.perMinHeight - 1}
+                getLineLeft={lineId => this.getLineLeft(lineId)}
               />
             )
           })}
