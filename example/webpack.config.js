@@ -4,7 +4,7 @@ module.exports = {
   entry: __dirname + '/app.jsx',
   output: {
       path: __dirname,
-      filename: 'index.js'
+      filename: 'timeline.js'
   },
   resolve: {
     extensions: ['', ".js", ".jsx", ".es6"]

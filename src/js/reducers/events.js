@@ -1,3 +1,3 @@
 export default function events(state = [], action) {
-  return [];
+  return state;
 }
