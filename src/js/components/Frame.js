@@ -4,6 +4,7 @@ import DndBackend from 'react-dnd-touch-backend';
 import { DropTarget } from 'react-dnd';
 import LineLabel from './LineLabel';
 import Line from './Line';
+import Ruler from './Ruler';
 
 const target = {
   drop(props, monitor, component) {
@@ -24,58 +25,59 @@ class Frame extends Component
 {
   constructor(props, context) {
     super(props, context);
+    //linesWrapperのminWidth。ウィンドウの幅が全てのタイムラインの幅より小さくなるとフロートが崩れるので。
+    this.minWidth = 0;
 
-    const lines = [];
-    const labels = [];
-    this.props.lines.forEach(data => {
-      this.createLineComponent(data, lines, labels);
+    this.lines = [];
+    this.labels = [];
+    this.props.lines.forEach((data, index, array) => {
+      this.createLineComponent(data, index, array);
     })
 
     this.state = {
-      lines: lines,
-      labels: labels,
-      events: this.props.events,
-      minWidth: 0
+      events: this.props.events
     }
   }
 
-  createLineComponent(data, lines, labels){
-    const hasRuler = lines.length % this.props.rulerInterval === 0;
-    const prevRuler = (lines.length + 1) % this.props.rulerInterval === 0;
-
-    labels.push(
+  createLineComponent(data, index, array){
+    const hasRuler = this.lines.length % this.props.rulerInterval === 0;
+    const prevRuler = (this.lines.length + 1) % this.props.rulerInterval === 0;
+    this.labels.push(
       <LineLabel
         key={data.id}
         width={this.props.lineWidth}
         hasRuler={hasRuler}
         prevRuler={prevRuler}
         label={data.label}
-        timeline={this.props.timeline}
+        isLast={index === array.length - 1}
       />
     );
 
-    lines.push(
+    this.lines.push(
       <Line
         hasRuler={hasRuler}
-        label={data.l}
         key={data.id}
         lineId={data.id}
         width={this.props.lineWidth}
         minHeight={this.props.minHeight}
         timeSpan={this.props.timeSpan}
-        even={lines.length % 2 === 0}
-        timeline={this.props.timeline}
+        even={this.lines.length % 2 === 0}
       />
     );
+
+    this.minWidth += this.props.lineWidth;
+    if(hasRuler){
+      this.minWidth += Ruler.width;
+    }
   }
 
   render(){
     const { connectDropTarget } = this.props;
     return connectDropTarget(
-      <div className="tlFrameView" style={{minWidth: this.state.minWidth}}>
-        <div className="tlLabelView" style={{height: LineLabel.height}}>{this.state.labels}</div>
+      <div className="tlFrameView" style={{minWidth: this.minWidth}}>
+        <div className="tlLabelView" style={{height: LineLabel.height}}>{this.labels}</div>
         <div ref="linesWrapper" className="tlLinesWrapper" style={{height: this.props.windowHeight - LineLabel.height}}>
-          {this.state.lines}
+          {this.lines}
           {this.state.events.map(event => {
             return (
               <Event
