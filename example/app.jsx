@@ -1,9 +1,15 @@
-import {Template} from '../index.es6';
+import App from '../src/js/containers/App';
+import configureStore from '../src/js/store/configureStore'
+import { render } from 'react-dom'
+import { Provider } from 'react-redux'
 
+const store = configureStore()
 
 window.onload = () => {
-  var template = ReactDOM.render(
-    <Template />,
+  ReactDOM.render(
+    <Provider store={store}>
+      <App />
+    </Provider>,
     document.getElementById('wrapper')
   );
 }
