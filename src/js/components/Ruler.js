@@ -5,15 +5,14 @@ export default class Ruler extends React.Component
 {
   constructor(props) {
     super(props);
-    this.state = {
-      hours: []
-    }
+    this.hours = [];
+
     this.props.timeSpan.eachTime((key, time) => {
       const style = {
         //border1pxを足す
         height: (this.props.minHeight + 1) * 4
       }
-      this.state.hours.push(
+      this.hours.push(
         <div key={time.getHour()} style={style}>{time.getDisplayHour()}</div>
       );
     });
@@ -21,14 +20,9 @@ export default class Ruler extends React.Component
 
   render(){
     return (
-      <div className="tlRulerView" style={{width: Ruler.width + 'px'}}>{this.state.hours}</div>
+      <div className="tlRulerView" style={{width: Ruler.width + 'px'}}>{this.hours}</div>
     );
   }
-}
-
-Ruler.propTypes = {
-  minHeight: React.PropTypes.number.isRequired,
-  timeSpan: React.PropTypes.instanceOf(TimeSpan).isRequired
 }
 
 Ruler.width = 30;

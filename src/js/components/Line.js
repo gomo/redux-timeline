@@ -1,21 +1,15 @@
 import React from 'react';
-import TimeSpan from '../classes/TimeSpan';
 import Hour from './Hour';
 import Ruler from './Ruler';
-import LineLabel from './LineLabel';
 import classNames from 'classnames';
 
 export default class Line extends React.Component
 {
   constructor(props) {
     super(props);
-    this.state = {
-      hours: [],
-      events: [],
-      draggingOver: false
-    }
+    this.hours = [];
     this.props.timeSpan.eachTime((key, time) => {
-      this.state.hours.push(
+      this.hours.push(
         <Hour
           key={time.getHour()}
           time={time}
@@ -23,6 +17,10 @@ export default class Line extends React.Component
         />
       );
     });
+
+    this.state = {
+      draggingOver: false
+    }
   }
 
   getRelativeTop(e){
@@ -70,7 +68,7 @@ export default class Line extends React.Component
           }
         })()}
         <div className={classNames('tlLineView', {tlEven: this.props.even, tlOdd: !this.props.even}, {tlOver: this.state.draggingOver})} style={{width: this.props.width + 'px'}}>
-          {this.state.hours}
+          {this.hours}
         </div>
       </div>
     );
