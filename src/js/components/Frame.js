@@ -28,6 +28,15 @@ class Frame extends Component
     //linesWrapperのminWidth。ウィンドウの幅が全てのタイムラインの幅より小さくなるとフロートが崩れるので。
     this.minWidth = 0;
 
+    //MinViewは一時間下に余分が生成されるので60分プラス
+    this.timeSpan = this.props.timeSpan.addMin(60);
+
+    //minViewがいくつあるかカウント。minViewは15分おき。それを元に高さを計算。border分1px足す
+    this.lineHeight = (this.timeSpan.getDistance() / 15) * (this.props.minHeight + 1);
+
+    //1分あたりの高さを算出しておく
+    this.perMinHeight = this.lineHeight / this.timeSpan.getDistance();
+
     this.lines = [];
     this.labels = [];
     this.props.lines.forEach((data, index, array) => {
@@ -62,6 +71,22 @@ class Frame extends Component
         minHeight={this.props.minHeight}
         timeSpan={this.props.timeSpan}
         even={this.lines.length % 2 === 0}
+        lineDidClick={this.props.lineDidClick}
+        topToTime={top => {
+          if(top <= 0){
+            return this.timeSpan.getStartTime();
+          }
+          let minute = top / this.perMinHeight;
+          const rest = minute % this.props.minInterval;
+          if(rest !== 0){
+            if(rest > this.props.minInterval / 2){
+              minute += this.props.minInterval - rest;
+            } else {
+              minute -= rest;
+            }
+          }
+          return this.timeSpan.getStartTime().addMin(minute);
+        }}
       />
     );
 

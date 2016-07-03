@@ -16,6 +16,7 @@ class App extends Component {
         minInterval={this.props.minInterval}
         rulerInterval={this.props.rulerInterval}
         windowHeight={this.props.windowHeight}
+        lineDidClick={this.props.lineDidClick}
       />
     )
   }

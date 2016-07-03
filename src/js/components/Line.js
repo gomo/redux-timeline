@@ -28,11 +28,12 @@ export default class Line extends React.Component
   }
 
   onClick(e){
-    if(this.props.timeline.props.lineDidClick){
-      const time = this.props.timeline.topToTime(this.getRelativeTop(e));
-      this.props.timeline.props.lineDidClick({
-        component: this,
-        time: time
+    if(this.props.lineDidClick){
+      const clickedTop = this.getRelativeTop(e);
+      this.props.lineDidClick({
+        lineId: this.props.lineId,
+        time: this.props.topToTime(clickedTop),
+        top: clickedTop
       });
     }
   }

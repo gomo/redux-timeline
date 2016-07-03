@@ -52,7 +52,11 @@ window.onload = () => {
 
   ReactDOM.render(
     <Provider store={store}>
-      <App />
+      <App
+        lineDidClick={data => {
+          console.log(data);
+        }}
+      />
     </Provider>,
     elem
   );
