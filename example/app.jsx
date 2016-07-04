@@ -3,6 +3,7 @@ import configureStore from '../src/js/store/configureStore'
 import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import TimeSpan from '../src/js/classes/TimeSpan'
+import * as EventActions from '../src/js/actions/event'
 
 function getWindowSize(){
   const width = window.innerWidth
@@ -47,7 +48,8 @@ window.onload = () => {
       {label:'label18', id:'__18'}
     ],
     events: [
-      {lineId: '__2', timeSpan: TimeSpan.create([12, 30], [13, 30]), color: '#FFDCB6'}
+      {id: '123', lineId: '__2', timeSpan: TimeSpan.create([12, 30], [13, 30]), color: '#FFDCB6'},
+      {id: '124', lineId: '__3', timeSpan: TimeSpan.create([14, 0], [16, 30]), color: '#FFDCB6'}
     ],
     timeSpan: TimeSpan.create([10, 0], [25, 0]),
     windowHeight: calcHeight(elem)
@@ -57,7 +59,11 @@ window.onload = () => {
     <Provider store={store}>
       <App
         lineDidClick={data => {
-          console.log(data);
+          store.dispatch(EventActions.addEvent(
+            data.lineId,
+            new TimeSpan(data.time, data.time.addMin(60)),
+            '#FFDCB6'
+          ));
         }}
       />
     </Provider>,

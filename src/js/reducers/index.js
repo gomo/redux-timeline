@@ -1,10 +1,9 @@
 import { combineReducers } from 'redux'
 import events from './events'
-import lines from './lines'
 
 const rootReducer = combineReducers({
   events,
-  lines,
+  lines: (state = [], action) => state,
   lineWidth: (state = 62, action) => state,
   minHeight: (state = 17, action) => state,
   minInterval: (state = 5, action) => state,

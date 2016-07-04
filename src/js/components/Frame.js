@@ -6,6 +6,7 @@ import LineLabel from './LineLabel';
 import Line from './Line';
 import Ruler from './Ruler';
 import Event from './Event';
+import TimeSpan from '../classes/TimeSpan'
 
 const target = {
   drop(props, monitor, component) {
@@ -43,10 +44,6 @@ class Frame extends Component
     this.props.lines.forEach((data, index, array) => {
       this.createLineComponent(data, index, array);
     })
-
-    this.state = {
-      events: this.props.events
-    }
   }
 
   createLineComponent(data, index, array){
@@ -106,7 +103,7 @@ class Frame extends Component
       if(hasRuler){
         left += Ruler.width;
       }
-      
+
       if(line.id == lineId){
         break;
       }
@@ -126,7 +123,7 @@ class Frame extends Component
         <div className="tlLabelView" style={{height: LineLabel.height}}>{this.labels}</div>
         <div ref="linesWrapper" className="tlLinesWrapper" style={{height: this.props.windowHeight - LineLabel.height}}>
           {this.lines}
-          {this.state.events.map(event => {
+          {this.props.events.map(event => {
             return (
               <Event
                 key={event.id}
@@ -149,6 +146,15 @@ class Frame extends Component
       </div>
     );
   }
+}
+
+Frame.propTypes = {
+  events: React.PropTypes.arrayOf(React.PropTypes.shape({
+    id: React.PropTypes.string.isRequired,
+    lineId: React.PropTypes.string.isRequired,
+    timeSpan: React.PropTypes.instanceOf(TimeSpan).isRequired,
+    color: React.PropTypes.string.isRequired
+  })).isRequired,
 }
 
 export default DragDropContext(DndBackend({ enableMouseEvents: true }))(DropTarget("Event", target, collect)(Frame));
