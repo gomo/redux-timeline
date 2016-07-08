@@ -3,7 +3,7 @@ import configureStore from '../src/js/store/configureStore'
 import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import TimeSpan from '../src/js/classes/TimeSpan'
-import * as EventActions from '../src/js/actions/event'
+import Actions from '../src/js/actions/'
 
 function getWindowSize(){
   const width = window.innerWidth
@@ -59,11 +59,14 @@ window.onload = () => {
     <Provider store={store}>
       <App
         lineDidClick={data => {
-          store.dispatch(EventActions.addEvent(
+          store.dispatch(Actions.addEvent(
             data.lineId,
             new TimeSpan(data.time, data.time.addMin(60)),
             '#FFDCB6'
           ));
+        }}
+        eventDidClick={data => {
+          store.dispatch(Actions.eventToDraggable(data.id));
         }}
       />
     </Provider>,

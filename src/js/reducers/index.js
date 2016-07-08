@@ -9,9 +9,7 @@ const rootReducer = combineReducers({
   minInterval: (state = 5, action) => state,
   rulerInterval: (state = 4, action) => state,
   timeSpan: (state = null, action) => state,
-  windowHeight: (state = 0, action) => {
-    return state;
-  }
+  windowHeight: (state = 0, action) => state
 })
 
 export default rootReducer

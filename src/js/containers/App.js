@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import Frame from '../components/Frame'
-
+import Actions from '../actions/'
+import { bindActionCreators } from 'redux'
 
 class App extends Component {
 
@@ -17,6 +18,8 @@ class App extends Component {
         rulerInterval={this.props.rulerInterval}
         windowHeight={this.props.windowHeight}
         lineDidClick={this.props.lineDidClick}
+        eventDidClick={this.props.eventDidClick}
+        actions={this.props.actions}
       />
     )
   }
@@ -29,7 +32,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-
+    actions: bindActionCreators(Actions, dispatch)
   }
 }
 

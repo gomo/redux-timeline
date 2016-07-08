@@ -7,13 +7,23 @@ import Line from './Line';
 import Ruler from './Ruler';
 import Event from './Event';
 import TimeSpan from '../classes/TimeSpan'
+import EventPreview from './EventPreview';
 
 const target = {
   drop(props, monitor, component) {
-
+    const event = monitor.getItem();
+    props.actions.setOffsetToEvent(event.id, monitor.getDifferenceFromInitialOffset());
+    props.actions.clearEventOffset(event.id);
   },
   hover(props, monitor, component){
-
+    const clientOffset = monitor.getSourceClientOffset();
+    // if(clientOffset){
+    //   const eventComponent = props.timeline.findEventById(monitor.getItem().id);
+    //   const lineWrapperBounds = props.timeline.frameComponent.refs.linesWrapper.getBoundingClientRect();
+    //   const lineComponent = props.timeline.draggingOver(clientOffset.x - lineWrapperBounds.left + (eventComponent.props.width / 2/*eventの真ん中を基準にする*/));
+    //   const time = props.timeline.topToTime(clientOffset.y + props.timeline.frameComponent.refs.linesWrapper.scrollTop - lineWrapperBounds.top);
+    //   eventComponent.dragging(time, lineComponent.props.lineId);
+    // }
   }
 };
 
@@ -132,17 +142,20 @@ class Frame extends Component
                 timeSpan={event.timeSpan}
                 display={event.display}
                 lineId={event.lineId}
-                timeline={this.props.timeline}
                 width={this.props.lineWidth - 2 - (Line.sidePadding * 2)}
                 vars={event.vars}
+                draggable={event.draggable}
+                moveTo={event.moveTo}
                 timeSpanToHeight={timeSpan => (timeSpan.getDistance() * this.perMinHeight) - 1}
                 timeToTop={time => this.timeSpan.getStartTime().getDistance(time) * this.perMinHeight - 1}
                 getLineLeft={lineId => this.getLineLeft(lineId)}
+                eventDidClick={this.props.eventDidClick}
               />
             )
           })}
           {this.props.children}
         </div>
+        <EventPreview />
       </div>
     );
   }
@@ -157,4 +170,4 @@ Frame.propTypes = {
   })).isRequired,
 }
 
-export default DragDropContext(DndBackend({ enableMouseEvents: true }))(DropTarget("Event", target, collect)(Frame));
+export default DragDropContext(DndBackend({ enableMouseEvents: true }))(DropTarget("Event", target, collect)(Frame))

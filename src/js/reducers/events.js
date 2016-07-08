@@ -1,4 +1,5 @@
 import * as types from '../constants/ActionTypes'
+import assign from 'object-assign';
 
 let maxId = 0;
 
@@ -14,6 +15,32 @@ export default function events(state = [], action) {
         },
         ...state
       ]
+    case types.EVENT_TO_DRAGGABLE:
+      return state.map(event => {
+        if(event.id != action.eventId){
+          return event;
+        } else {
+          return assign(event, {draggable: true});
+        }
+      });
+    case types.SET_OFFSET_TO_EVENT:
+      return state.map(event => {
+        if(event.id != action.eventId){
+          return event;
+        } else {
+          return assign(event, {moveTo: action.offset});
+        }
+      })
+    case types.CLEAR_EVENT_OFFSET:
+      return state.map(event => {
+        if(event.id != action.eventId){
+          return event;
+        } else {
+          const newEvent = assign({}, event);
+          delete newEvent.moveTo;
+          return newEvent;
+        }
+      })
     default:
       return state
   }

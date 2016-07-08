@@ -11,8 +11,7 @@ const source = {
     return props;
   },
   canDrag: function(props, monitor){
-    const draggable = props.timeline.findEventById(props.id).state.draggable;
-    return !!draggable;
+    return !!props.draggable;
   }
 }
 
@@ -46,120 +45,134 @@ class Event extends React.Component
     this.resizingTimeSpan = null;
     this.resizing = false;
     // this.props.timeline.addEventComponent(this);
-    this.vars = this.props.vars ? this.props.vars : {};
+    // this.vars = this.props.vars ? this.props.vars : {};
     this.element = null;
   }
 
-  get currentTimeSpan(){
-    return this.resizingTimeSpan || this.timeSpan;
-  }
-
-  get nextPosition(){
-    if(this.draggingPosition){
-      return {
-        lineId: this.draggingPosition.lineId,
-        timeSpan: this.timeSpan.shiftStartTime(this.draggingPosition.time)
-      }
-    } else if(this.resizingTimeSpan){
-      return{
-        lineId: this.lineId,
-        timeSpan: this.resizingTimeSpan
-      }
-    }
-
-    return null;
-  }
-
-  get prevPosition(){
-    if(!this.draggingPosition && !this.resizingTimeSpan){
-      return null;
-    } else {
-      return{
-        lineId: this.lineId,
-        timeSpan: this.timeSpan
-      }
-    }
-  }
+  // get currentTimeSpan(){
+  //   return this.resizingTimeSpan || this.timeSpan;
+  // }
+  //
+  // get nextPosition(){
+  //   if(this.draggingPosition){
+  //     return {
+  //       lineId: this.draggingPosition.lineId,
+  //       timeSpan: this.timeSpan.shiftStartTime(this.draggingPosition.time)
+  //     }
+  //   } else if(this.resizingTimeSpan){
+  //     return{
+  //       lineId: this.lineId,
+  //       timeSpan: this.resizingTimeSpan
+  //     }
+  //   }
+  //
+  //   return null;
+  // }
+  //
+  // get prevPosition(){
+  //   if(!this.draggingPosition && !this.resizingTimeSpan){
+  //     return null;
+  //   } else {
+  //     return{
+  //       lineId: this.lineId,
+  //       timeSpan: this.timeSpan
+  //     }
+  //   }
+  // }
 
   /**
    * 他のEventと重なっていないかチェックする
    * @param  {object}  position {lineId: ***, timeSpan: ***}
    * @return {Boolean}
    */
-  isFreePosition(position){
-    for (var i = 0; i < this.props.timeline.eventComponents.length; i++) {
-      let ev = this.props.timeline.eventComponents[i];
-      if(ev === this) continue;
-      if(ev.lineId != position.lineId) continue;
-      if(ev.currentTimeSpan.overlaps(position.timeSpan)){
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  moveTo(top, left){
-    this.setState({top: top, left: left});
-  }
+  // isFreePosition(position){
+  //   for (var i = 0; i < this.props.timeline.eventComponents.length; i++) {
+  //     let ev = this.props.timeline.eventComponents[i];
+  //     if(ev === this) continue;
+  //     if(ev.lineId != position.lineId) continue;
+  //     if(ev.currentTimeSpan.overlaps(position.timeSpan)){
+  //       return false;
+  //     }
+  //   }
+  //
+  //   return true;
+  // }
+  //
+  // moveTo(top, left){
+  //   this.setState({top: top, left: left});
+  // }
 
   onClick(e){
-    if(this.props.timeline.props.eventDidClick){
+    if(this.props.eventDidClick){
       if(this.resizing){
         return ;
       }
 
-      this.props.timeline.props.eventDidClick({
-        component: this
+      this.props.eventDidClick({
+        id: this.props.id,
+        vars: this.props.vars,
+        color: this.props.color,
+        timeSpan: this.props.timeSpan,
+        display: this.props.display,
+        lineId: this.props.lineId
       });
     }
   }
 
-  dragging(time, lineId){
-    this.draggingPosition = {time: time, lineId: lineId};
-    this.setState({draggingDisplay: time.getDisplayTime()});
-  }
+  // dragging(time, lineId){
+  //   this.draggingPosition = {time: time, lineId: lineId};
+  //   this.setState({draggingDisplay: time.getDisplayTime()});
+  // }
 
-  resizeUp(e){
-    this.props.timeline.frameComponent.resizeUp(this, e.clientY);
-  }
+  // resizeUp(e){
+  //   this.props.timeline.frameComponent.resizeUp(this, e.clientY);
+  // }
+  //
+  // resizeDown(e){
+  //   this.props.timeline.frameComponent.resizeDown(this, e.clientY);
+  // }
+  //
+  // endResizing(e){
+  //   if(this.resizingTimeSpan){
+  //     const newState = {
+  //       draggingDisplay: null,
+  //       draggingDisplayTop: null
+  //     };
+  //
+  //     if(this.resizingTimeSpan){
+  //       newState.top = this.props.timeline.timeToTop(this.resizingTimeSpan.getStartTime());
+  //       newState.height = this.props.timeline.timeSpanToHeight(this.resizingTimeSpan);
+  //     }
+  //
+  //     this.setState(newState);
+  //   } else {
+  //     this.onClick();
+  //   }
+  //
+  //   //onClickよりendResizingの先に発生してしまう。
+  //   setTimeout(() => this.resizing = false, 100);
+  // }
 
-  resizeDown(e){
-    this.props.timeline.frameComponent.resizeDown(this, e.clientY);
-  }
-
-  endResizing(e){
-    if(this.resizingTimeSpan){
-      const newState = {
-        draggingDisplay: null,
-        draggingDisplayTop: null
-      };
-
-      if(this.resizingTimeSpan){
-        newState.top = this.props.timeline.timeToTop(this.resizingTimeSpan.getStartTime());
-        newState.height = this.props.timeline.timeSpanToHeight(this.resizingTimeSpan);
-      }
-
-      this.setState(newState);
-    } else {
-      this.onClick();
-    }
-
-    //onClickよりendResizingの先に発生してしまう。
-    setTimeout(() => this.resizing = false, 100);
-  }
-
-  onContextMenu(e){
-    if(this.props.timeline.props.eventDidRightClick){
-      this.props.timeline.props.eventDidRightClick({
-        component: this
+  // onContextMenu(e){
+  //   if(this.props.timeline.props.eventDidRightClick){
+  //     this.props.timeline.props.eventDidRightClick({
+  //       component: this
+  //     });
+  //   }
+  // }
+  //
+  // componentDidMount(){
+  //   //connectDragSourceの直下のエレメントにrefを設定できないため
+  //   this.element = this.refs.innerElment.parentNode;
+  // }
+  //
+  componentWillUpdate(nextProps, nextState){
+    if(!this.props.moveTo && nextProps.moveTo){
+      this.setState({
+        top: this.state.top + nextProps.moveTo.y,
+        left: this.state.left + nextProps.moveTo.x,
       });
     }
-  }
-
-  componentDidMount(){
-    //connectDragSourceの直下のエレメントにrefを設定できないため
-    this.element = this.refs.innerElment.parentNode;
   }
 
   render(){
@@ -174,7 +187,7 @@ class Event extends React.Component
     };
 
     return this.props.connectDragSource(
-      <div onContextMenu={e => this.onContextMenu(e)} className={classNames('tlEventView', {tlDraggingEvent: this.state.draggable, tlResizableEvent: this.state.resizable})} style={style} onClick={e => this.onClick(e)}>
+      <div onContextMenu={e => this.onContextMenu(e)} className={classNames('tlEventView', {tlDraggingEvent: this.props.draggable, tlResizableEvent: this.state.resizable})} style={style} onClick={e => this.onClick(e)}>
         <div ref="innerElment">
           {(() => {
             if(this.state.resizable){
