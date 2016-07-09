@@ -24,7 +24,7 @@ class EventPreview extends React.Component {
       position:'absolute',
       top: 0,
       left: 0,
-      height: this.props.item.timeSpanToHeight(this.props.item.timeSpan),
+      height: this.props.item.util.timeSpanToHeight(this.props.item.timeSpan),
       width: this.props.item.width,
       backgroundColor: this.props.item.color,
       transform: transform,

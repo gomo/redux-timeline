@@ -11,3 +11,7 @@ export function setOffsetToEvent(eventId, offset) {
 export function clearEventOffset(eventId) {
   return { type: types.CLEAR_EVENT_OFFSET, eventId}
 }
+
+export function addEvent(lineId, timeSpan, color) {
+  return { type: types.ADD_EVENT, lineId, timeSpan, color }
+}

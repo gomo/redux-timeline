@@ -9,6 +9,8 @@ import Event from './Event';
 import TimeSpan from '../classes/TimeSpan'
 import EventPreview from './EventPreview';
 
+let draggingOverLine;
+
 const target = {
   drop(props, monitor, component) {
     const event = monitor.getItem();
@@ -17,13 +19,25 @@ const target = {
   },
   hover(props, monitor, component){
     const clientOffset = monitor.getSourceClientOffset();
-    // if(clientOffset){
-    //   const eventComponent = props.timeline.findEventById(monitor.getItem().id);
-    //   const lineWrapperBounds = props.timeline.frameComponent.refs.linesWrapper.getBoundingClientRect();
-    //   const lineComponent = props.timeline.draggingOver(clientOffset.x - lineWrapperBounds.left + (eventComponent.props.width / 2/*eventの真ん中を基準にする*/));
-    //   const time = props.timeline.topToTime(clientOffset.y + props.timeline.frameComponent.refs.linesWrapper.scrollTop - lineWrapperBounds.top);
-    //   eventComponent.dragging(time, lineComponent.props.lineId);
-    // }
+    if(clientOffset){
+      const event = monitor.getItem();
+      const lineWrapperBounds = component.refs.linesWrapper.getBoundingClientRect();
+
+      const line = component.getLineWithLeft(clientOffset.x - lineWrapperBounds.left + (event.width / 2));/*eventの真ん中を基準にする*/
+      if(line && draggingOverLine !== line){
+        line.draggingOver();
+        if(draggingOverLine){
+          draggingOverLine.clearDraggingOver();
+        }
+        draggingOverLine = line;
+      }
+      const eventTop = clientOffset.y + component.refs.linesWrapper.scrollTop - lineWrapperBounds.top;
+      // const eventComponent = props.timeline.findEventById(monitor.getItem().id);
+      // const lineWrapperBounds = props.timeline.frameComponent.refs.linesWrapper.getBoundingClientRect();
+      // const lineComponent = props.timeline.draggingOver(clientOffset.x - lineWrapperBounds.left + (eventComponent.props.width / 2/*eventの真ん中を基準にする*/));
+      // const time = props.timeline.topToTime(clientOffset.y + props.timeline.frameComponent.refs.linesWrapper.scrollTop - lineWrapperBounds.top);
+      // eventComponent.dragging(time, lineComponent.props.lineId);
+    }
   }
 };
 
@@ -49,11 +63,53 @@ class Frame extends Component
     //1分あたりの高さを算出しておく
     this.perMinHeight = this.lineHeight / this.timeSpan.getDistance();
 
+    this.util = {
+      timeToTop: time => this.timeSpan.getStartTime().getDistance(time) * this.perMinHeight - 1,
+      timeSpanToHeight: timeSpan => (timeSpan.getDistance() * this.perMinHeight) - 1,
+      getLineLeft: lineId => {
+        let left = 0;
+
+        for (var i = 0; i < this.props.lines.length; i++) {
+          var line = this.props.lines[i];
+          const hasRuler = i % this.props.rulerInterval === 0;
+          if(hasRuler){
+            left += Ruler.width;
+          }
+
+          if(line.id == lineId){
+            break;
+          }
+
+          left += this.props.lineWidth;
+        }
+
+        left += Line.sidePadding;
+
+        return left;
+      }
+    }
+
+    this.lineComponents = [];
     this.lines = [];
     this.labels = [];
     this.props.lines.forEach((data, index, array) => {
       this.createLineComponent(data, index, array);
     })
+  }
+
+  getLineWithLeft(left){
+    var width = 0;
+    const line = this.lineComponents.find(line => {
+      width += line.props.hasRuler ? this.props.lineWidth + Ruler.width : this.props.lineWidth;
+      if(left < width){
+        return line;
+      }
+    });
+    if(line){
+      return line;
+    }
+
+    return false;
   }
 
   createLineComponent(data, index, array){
@@ -74,7 +130,7 @@ class Frame extends Component
       <Line
         hasRuler={hasRuler}
         key={data.id}
-        lineId={data.id}
+        id={data.id}
         width={this.props.lineWidth}
         minHeight={this.props.minHeight}
         timeSpan={this.props.timeSpan}
@@ -95,6 +151,7 @@ class Frame extends Component
           }
           return this.timeSpan.getStartTime().addMin(minute);
         }}
+        lineComponents={this.lineComponents}
       />
     );
 
@@ -102,28 +159,6 @@ class Frame extends Component
     if(hasRuler){
       this.minWidth += Ruler.width;
     }
-  }
-
-  getLineLeft(lineId){
-    let left = 0;
-
-    for (var i = 0; i < this.props.lines.length; i++) {
-      var line = this.props.lines[i];
-      const hasRuler = i % this.props.rulerInterval === 0;
-      if(hasRuler){
-        left += Ruler.width;
-      }
-
-      if(line.id == lineId){
-        break;
-      }
-
-      left += this.props.lineWidth;
-    }
-
-    left += Line.sidePadding;
-
-    return left;
   }
 
   render(){
@@ -146,9 +181,7 @@ class Frame extends Component
                 vars={event.vars}
                 draggable={event.draggable}
                 moveTo={event.moveTo}
-                timeSpanToHeight={timeSpan => (timeSpan.getDistance() * this.perMinHeight) - 1}
-                timeToTop={time => this.timeSpan.getStartTime().getDistance(time) * this.perMinHeight - 1}
-                getLineLeft={lineId => this.getLineLeft(lineId)}
+                util={this.util}
                 eventDidClick={this.props.eventDidClick}
               />
             )

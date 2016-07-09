@@ -27,9 +27,9 @@ class Event extends React.Component
   constructor(props) {
     super(props);
     this.state = {
-      height: this.props.timeSpanToHeight(this.props.timeSpan),
-      top: this.props.timeToTop(this.props.timeSpan.getStartTime()),
-      left: this.props.getLineLeft(this.props.lineId),
+      height: this.props.util.timeSpanToHeight(this.props.timeSpan),
+      top: this.props.util.timeToTop(this.props.timeSpan.getStartTime()),
+      left: this.props.util.getLineLeft(this.props.lineId),
       color: this.props.color,
       display: this.props.display || [],
       draggable: false,
@@ -46,7 +46,7 @@ class Event extends React.Component
     this.resizing = false;
     // this.props.timeline.addEventComponent(this);
     // this.vars = this.props.vars ? this.props.vars : {};
-    this.element = null;
+    // this.element = null;
   }
 
   // get currentTimeSpan(){
@@ -153,13 +153,13 @@ class Event extends React.Component
   //   setTimeout(() => this.resizing = false, 100);
   // }
 
-  // onContextMenu(e){
-  //   if(this.props.timeline.props.eventDidRightClick){
-  //     this.props.timeline.props.eventDidRightClick({
-  //       component: this
-  //     });
-  //   }
-  // }
+  onContextMenu(e){
+    // if(this.props.timeline.props.eventDidRightClick){
+    //   this.props.timeline.props.eventDidRightClick({
+    //     component: this
+    //   });
+    // }
+  }
   //
   // componentDidMount(){
   //   //connectDragSourceの直下のエレメントにrefを設定できないため

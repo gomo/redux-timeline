@@ -18,6 +18,8 @@ export default class Line extends React.Component
       );
     });
 
+    this.props.lineComponents.push(this);
+
     this.state = {
       draggingOver: false
     }
@@ -31,7 +33,7 @@ export default class Line extends React.Component
     if(this.props.lineDidClick){
       const clickedTop = this.getRelativeTop(e);
       this.props.lineDidClick({
-        lineId: this.props.lineId,
+        lineId: this.props.id,
         time: this.props.topToTime(clickedTop),
         top: clickedTop
       });
@@ -39,11 +41,11 @@ export default class Line extends React.Component
   }
 
   onContextMenu(e){
-    if(this.props.timeline.props.lineDidRightClick){
-      this.props.timeline.props.lineDidRightClick({
-        component: this
-      });
-    }
+    // if(this.props.timeline.props.lineDidRightClick){
+    //   this.props.timeline.props.lineDidRightClick({
+    //     component: this
+    //   });
+    // }
   }
 
   draggingOver(){
@@ -61,7 +63,7 @@ export default class Line extends React.Component
           if(this.props.hasRuler){
             return (
               <Ruler
-                key={'ruler_' + this.props.lineId}
+                key={'ruler_' + this.props.id}
                 minHeight={this.props.minHeight}
                 timeSpan={this.props.timeSpan}
               />

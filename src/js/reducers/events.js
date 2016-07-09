@@ -36,9 +36,7 @@ export default function events(state = [], action) {
         if(event.id != action.eventId){
           return event;
         } else {
-          const newEvent = assign({}, event);
-          delete newEvent.moveTo;
-          return newEvent;
+          return assign(event, {moveTo: undefined});
         }
       })
     default:
