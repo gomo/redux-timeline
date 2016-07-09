@@ -23,6 +23,7 @@ const target = {
       const event = monitor.getItem();
       const lineWrapperBounds = component.refs.linesWrapper.getBoundingClientRect();
 
+      //ドラッグ中のLINEを識別
       const line = component.getLineWithLeft(clientOffset.x - lineWrapperBounds.left + (event.width / 2));/*eventの真ん中を基準にする*/
       if(line && draggingOverLine !== line){
         line.draggingOver();
@@ -31,6 +32,8 @@ const target = {
         }
         draggingOverLine = line;
       }
+
+      //タイムインジケーターを出す。
       const eventTop = clientOffset.y + component.refs.linesWrapper.scrollTop - lineWrapperBounds.top;
       // const eventComponent = props.timeline.findEventById(monitor.getItem().id);
       // const lineWrapperBounds = props.timeline.frameComponent.refs.linesWrapper.getBoundingClientRect();
