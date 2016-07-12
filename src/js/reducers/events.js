@@ -39,6 +39,14 @@ export default function events(state = [], action) {
           return assign(event, {moveTo: undefined});
         }
       })
+    case types.DISPLAY_TIME_TO_EVENT:
+      return state.map(event => {
+        if(event.id != action.eventId){
+          return event;
+        } else {
+          return assign(event, {draggingDisplay: action.time.getDisplayTime()});
+        }
+      })
     default:
       return state
   }

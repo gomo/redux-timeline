@@ -33,8 +33,7 @@ class Event extends React.Component
       color: this.props.color,
       display: this.props.display || [],
       draggable: false,
-      resizable: false,
-      draggingDisplay: ''
+      resizable: false
     }
 
     // this.actions = new EventActions(this);
@@ -199,7 +198,7 @@ class Event extends React.Component
             }
           })()}
           <EventBase
-            draggingDisplay={this.state.draggingDisplay}
+            draggingDisplay={this.props.draggingDisplay}
             draggingDisplayTop={this.state.draggingDisplayTop}
             display={this.state.display}
           />

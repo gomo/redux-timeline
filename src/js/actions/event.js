@@ -15,3 +15,7 @@ export function clearEventOffset(eventId) {
 export function addEvent(lineId, timeSpan, color) {
   return { type: types.ADD_EVENT, lineId, timeSpan, color }
 }
+
+export function displayTimeToEvent(eventId, time) {
+  return { type: types.DISPLAY_TIME_TO_EVENT, eventId, time }
+}

@@ -9,7 +9,7 @@ import Event from './Event';
 import TimeSpan from '../classes/TimeSpan'
 import EventPreview from './EventPreview';
 
-let draggingOverLine;
+let draggingOverLineComponent;
 
 const target = {
   drop(props, monitor, component) {
@@ -24,17 +24,19 @@ const target = {
       const lineWrapperBounds = component.refs.linesWrapper.getBoundingClientRect();
 
       //ドラッグ中のLINEを識別
-      const line = component.getLineWithLeft(clientOffset.x - lineWrapperBounds.left + (event.width / 2));/*eventの真ん中を基準にする*/
-      if(line && draggingOverLine !== line){
-        line.draggingOver();
-        if(draggingOverLine){
-          draggingOverLine.clearDraggingOver();
+      const lineComponent = component.getLineWithLeft(clientOffset.x - lineWrapperBounds.left + (event.width / 2));/*eventの真ん中を基準にする*/
+      if(lineComponent && draggingOverLineComponent !== lineComponent){
+        lineComponent.draggingOver();
+        if(draggingOverLineComponent){
+          draggingOverLineComponent.clearDraggingOver();
         }
-        draggingOverLine = line;
+        draggingOverLineComponent = lineComponent;
       }
 
       //タイムインジケーターを出す。
       const eventTop = clientOffset.y + component.refs.linesWrapper.scrollTop - lineWrapperBounds.top;
+      const time = event.util.topToTime(eventTop);
+      props.actions.displayTimeToEvent(event.id, time);
       // const eventComponent = props.timeline.findEventById(monitor.getItem().id);
       // const lineWrapperBounds = props.timeline.frameComponent.refs.linesWrapper.getBoundingClientRect();
       // const lineComponent = props.timeline.draggingOver(clientOffset.x - lineWrapperBounds.left + (eventComponent.props.width / 2/*eventの真ん中を基準にする*/));
@@ -89,6 +91,21 @@ class Frame extends Component
         left += Line.sidePadding;
 
         return left;
+      },
+      topToTime: top => {
+        if(top <= 0){
+          return this.timeSpan.getStartTime();
+        }
+        let minute = top / this.perMinHeight;
+        const rest = minute % this.props.minInterval;
+        if(rest !== 0){
+          if(rest > this.props.minInterval / 2){
+            minute += this.props.minInterval - rest;
+          } else {
+            minute -= rest;
+          }
+        }
+        return this.timeSpan.getStartTime().addMin(minute);
       }
     }
 
@@ -186,6 +203,7 @@ class Frame extends Component
                 moveTo={event.moveTo}
                 util={this.util}
                 eventDidClick={this.props.eventDidClick}
+                draggingDisplay={event.draggingDisplay}
               />
             )
           })}
